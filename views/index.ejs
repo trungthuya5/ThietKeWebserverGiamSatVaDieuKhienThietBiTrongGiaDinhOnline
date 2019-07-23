@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html ng-app="myApp" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> -->
+    <link rel="stylesheet" href="/css/fontawesome/css/all.css">
+    <link rel="stylesheet" href="/css/sketch.css">
+    <script src="/js/angular.js"></script>
+    <script src="/js/sketch.js"></script>
+
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <title>Document</title>
+</head>
+
+<body ng-controller="myController as mc">
+    <div class="sidebar">
+        <div class="sidebar-inner">
+            <div id="username" class="sidebar-logo">admin</div>
+            <ul class="sidebar-menu">
+                <li><a href="/add">
+                        <span class="icon-holder"><i class="fa fa-bell" aria-hidden="true"></i></span>
+                        <span class="title">Thêm thiết bị</span>
+                    </a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="page-container">
+        <div class="header">
+            <ul class="head-left">
+                <li><a href="/"><i class="fa fa-bars fa-lg" aria-hidden="true"></i>
+                    </a></li>
+
+            </ul>
+            <ul class="head-right">
+                <!-- <li><a href="#"><i class="fa fa-bell fa-lg" aria-hidden="true"></i>
+                    </a></li>
+                <li><a href="#"><i class="fa fa-envelope fa-lg" aria-hidden="true"></i>
+                    </a></li>
+                <li><a href="#"><i class="fa fa-user fa-lg" aria-hidden="true"></i>
+                    </a></li> -->
+                <li><a id="bt_dangxuat" href="#">Đăng xuất</a></li>
+            </ul>
+        </div>
+        <div class="main-content">
+            <div class="box">
+                <div class="box-item">
+                    <div class="title">Thiết bị</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(function () {
+            var socket = io();
+            //localStorage.removeItem("user")
+            if (!localStorage.getItem("user")) {
+                var url = "/dangnhap"
+                $(location).attr('href', url);
+            }
+
+            var user = JSON.parse(localStorage.getItem("user"))
+            // alert(user.token)
+            $("#username").text(user.username)
+            $.ajax({
+                type: 'GET',
+                url: "/api/devices",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "auth": user.token
+                }
+            }).done(function (data) {
+                data.forEach(item => {
+                    $(".box-item").append("<div class=\"item\"><div class=\"title\">" + item.name + "</div><label class=\"form-switch\"><input type=\"checkbox\" id=\"" + item.code + "\"><i></i></label></div>");
+                    if (item.data == 1) $("#" + item.code).prop('checked', true)
+                    else $("#" + item.code).prop('checked', false)
+                    $("#" + item.code).click(function () {
+                        if (this.checked) {
+                            socket.emit(item.code, 1)
+                        } else {
+                            socket.emit(item.code, 0)
+                        }
+                    });
+                    socket.on(item.code, function (msg) {
+                        console.log(msg)
+                        if (parseInt(msg) == 1) $("#" + item.code).prop('checked', true)
+                        else $("#" + item.code).prop('checked', false)
+                    });
+                });
+            }).error(function (data) {
+                console.log(JSON.stringify(data));
+            })
+
+        });
+
+        $("#bt_dangxuat").click(function () {
+            localStorage.removeItem("user")
+            var url = "/"
+            $(location).attr('href', url);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <title>Đăng nhập</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        body,
+        html {
+            height: 100%;
+        }
+
+        #dangnhap {
+            align-content: center;
+            width: 300px;
+            margin: 0 auto;
+            margin-top: 250px;
+            background: #fff;
+            padding: 15px;
+            box-shadow: 0 0 6px rgba(0, 0, 0, .5);
+        }
+
+        input {
+            padding: 5px;
+            margin: 5px;
+        }
+        button{
+            padding: 5px;
+            width: 100px;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="dangnhap">
+         <input type="text" id="dn_username" placeholder="Tài khoản" value="admin"><br>
+        
+        <input type="password" id="dn_password" placeholder="Mật Khẩu" value="123456"><br>
+        <button id="bt_dangnhap">ĐĂNG NHẬP</button>
+    </div>
+    <script>
+        $(document).ready(function () {
+            console.log(localStorage.getItem("user"))
+
+            if (localStorage.getItem("user")) {
+                var url = "/"
+                $(location).attr('href', url);
+            }
+
+            // Đăng nhập
+            $("#bt_dangnhap").click(function () {
+
+                $.ajax({
+                    url: '/api/user/login',
+                    type: 'POST',
+                    data: JSON.stringify({ username: $('#dn_username').val(), password: $('#dn_password').val() }),
+                    contentType: 'application/json; charset=utf-8'
+                }).done(function (data) {
+                    if (typeof (Storage) !== "undefined") {
+                        console.log(data)
+                        var user = {}
+                        user.token = data.data
+                        console.log(user.token)
+                        user.username = $('#dn_username').val()
+                        localStorage.setItem("user", JSON.stringify(user));
+                        var url = "/"
+                        $(location).attr('href', url);
+                    } else {
+                        alert("Sorry, your browser does not support Web Storage...");
+                    }
+                }).error(function (data) {
+                    console.log(JSON.stringify(data));
+                })
+
+            });
+
+
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html ng-app="myApp" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> -->
+    <link rel="stylesheet" href="/css/fontawesome/css/all.css">
+    <link rel="stylesheet" href="/css/sketch.css">
+    <script src="/js/angular.js"></script>
+    <script src="/js/sketch.js"></script>
+
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <title>Document</title>
+    <style>
+        .box-item {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(0, 0, 0, .0625);
+            background-color: #fff;
+            padding: 10px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            width: 500px;
+        }
+
+        #bt_them {
+            width: 100px;
+            padding: 5px;
+
+        }
+
+        input {
+            padding: 3px;
+            width: 400px;
+        }
+    </style>
+</head>
+
+<body ng-controller="myController as mc">
+    <div class="sidebar">
+        <div class="sidebar-inner">
+            <div id="username" class="sidebar-logo">admin</div>
+            <ul class="sidebar-menu">
+                <li><a href="/add">
+                        <span class="icon-holder"><i class="fa fa-bell" aria-hidden="true"></i></span>
+                        <span class="title">Thêm thiết bị</span>
+                    </a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="page-container">
+        <div class="header">
+            <ul class="head-left">
+                <li><a href="/"><i class="fa fa-bars fa-lg" aria-hidden="true"></i>
+                    </a></li>
+            </ul>
+            <ul class="head-right">
+                <li><a id="bt_dangxuat" href="#">Đăng xuất</a></li>
+            </ul>
+        </div>
+        <div class="main-content">
+            <div class="box">
+                <div class="box-item">
+                    <b>Thêm mới thiết bị</b>
+                    Tên thiết bị: <input type="text" id="tb_name">
+                    Kiểu: <input type="text" value="ONOFF" id="tb_type">
+                    Mã thiết bị: <input type="text" id="tb_code"><br>
+                    <button id="bt_them">Thêm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(function () {
+            var user = JSON.parse(localStorage.getItem("user"))
+
+            $("#bt_them").click(function () {
+                var device = {}
+                device.name = $("#tb_name").val()
+                device.type = $("#tb_type").val()
+                device.code = $("#tb_code").val()
+                device.data = 0
+                device.pid = 0
+                console.log(JSON.stringify(device))
+                $.ajax({
+                    type: 'POST',
+                    url: "/api/devices",
+                    data: device,
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "auth": user.token
+                    }
+                }).done(function (data) {
+                    alert("Thêm thiết bị thành công")
+                    console.log(data)
+                    var url = "/"
+                    $(location).attr('href', url);
+                }).error(function (data) {
+                    console.log(JSON.stringify(data));
+                })
+            })
+        });
+    </script>
+</body>
+
+</html>

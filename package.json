@@ -1,0 +1,24 @@
+{
+  "name": "doantotnghiep",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "ejs": "^2.6.1",
+    "express": "^4.15.2",
+    "express-session": "^1.15.6",
+    "jsonwebtoken": "^8.5.1",
+    "mysql": "^2.16.0",
+    "mysql-import": "^2.0.2",
+    "mysqldump": "^2.3.0",
+    "pg": "^7.9.0",
+    "socket.io": "^1.7.4",
+    "socketio-wildcard": "^2.0.0"
+  }
+}
